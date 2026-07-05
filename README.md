@@ -59,27 +59,27 @@ A base de dados apresenta um desbalanceamento nítido entre amostras potáveis e
 *   **Água Não Potável (Classe 0):** 1.998 amostras (61,0%)
 *   **Água Potável (Classe 1):** 1.278 amostras (39,0%)
 
-Esse desbalanceamento de classes prejudicaria o aprendizado de classificadores tradicionais, tornando-os tendenciosos em direção à classe majoritária (não potável). Para mitigar esse problema de forma científica, o pipeline implementado em `main.py` utiliza a técnica **SMOTE** (`Synthetic Minority Over-sampling Technique`) [1, 2], gerando dados sintéticos para equilibrar a proporção das classes antes do treinamento.
+Esse desbalanceamento de classes prejudicaria o aprendizado de classificadores tradicionais, tornando-os tendenciosos em direção à classe majoritária (não potável). Para mitigar esse problema de forma científica, o pipeline implementado em `main.py` utiliza a técnica **SMOTE** (`Synthetic Minority Over-sampling Technique`), gerando dados sintéticos para equilibrar a proporção das classes antes do treinamento.
 
 <img width="500" height="371" alt="distribuicao_classes" src="https://github.com/user-attachments/assets/6b29979f-f5dc-463d-9a12-9f92ba920e66" />
 
 ### 2. Tratamento de Dados Ausentes (Valores Nulos)
 Detectamos que três variáveis cruciais possuem dados faltantes expressivos:
-*   **Sulfate (Sulfato):** 781 valores ausentes (exige atenção, pois o sulfato é abundante no solo e indicador de mineralização) [4].
-*   **ph (pH):** 491 valores ausentes (essencial para medir o equilíbrio ácido-base) [5].
-*   **Trihalomethanes (Trihalometanos):** 162 valores ausentes (subprodutos químicos de tratamento) [4].
+*   **Sulfate (Sulfato):** 781 valores ausentes (exige atenção, pois o sulfato é abundante no solo e indicador de mineralização).
+*   **ph (pH):** 491 valores ausentes (essencial para medir o equilíbrio ácido-base).
+*   **Trihalomethanes (Trihalometanos):** 162 valores ausentes (subprodutos químicos de tratamento).
 
-Para evitar a perda de quase um terço do dataset por eliminação direta, o script utiliza a classe `SimpleImputer` com a estratégia de preenchimento pela **mediana** de cada coluna [1, 2], preservando a integridade estatística das distribuições.
+Para evitar a perda de quase um terço do dataset por eliminação direta, o script utiliza a classe `SimpleImputer` com a estratégia de preenchimento pela **mediana** de cada coluna, preservando a integridade estatística das distribuições.
 
 ### 3. Distribuição do pH vs. Padrões de Segurança da OMS
-O pH médio das amostras é de **7,08**, o que parece ideal à primeira vista. No entanto, a análise de dispersão mostra que uma quantidade massiva de amostras está fora da faixa de segurança regulamentada pela Organização Mundial da Saúde (OMS), que estabelece limites estritos entre **6,5 e 8,5** para consumo humano seguro [5]. Amostras muito ácidas (pH < 6.5) ou muito alcalinas (pH > 8.5) representam riscos graves à saúde [5].
+O pH médio das amostras é de **7,08**, o que parece ideal à primeira vista. No entanto, a análise de dispersão mostra que uma quantidade massiva de amostras está fora da faixa de segurança regulamentada pela Organização Mundial da Saúde (OMS), que estabelece limites estritos entre **6,5 e 8,5** para consumo humano seguro. Amostras muito ácidas (pH < 6.5) ou muito alcalinas (pH > 8.5) representam riscos graves à saúde.
 
 <img width="500" height="294" alt="distribuicao_ph" src="https://github.com/user-attachments/assets/e9b79775-40f4-474e-aa1f-1fe71871171b" />
 
 ### 4. Correlação Linear Desprezível (Relações Não-Lineares)
 Ao calcular a matriz de correlação de Pearson entre todas as propriedades físico-químicas da água e a variável-alvo (`Potability`), observou-se que todos os coeficientes lineares são extremamente baixos (praticamente todos abaixo de **0.05**).
 
-Isso prova empiricamente que **nenhum atributo isolado consegue determinar se a água é potável de forma linear**. Esse comportamento justifica a nossa abordagem técnica de benchmarking [6]: modelos lineares simples como a *Regressão Logística* [1, 6] tendem a apresentar menor desempenho comparados a modelos de árvore baseados em ensembles não-lineares, como o *Random Forest* e o *XGBoost* [1, 6], que conseguem capturar padrões complexos e interações profundas entre os dados químicos.
+Isso prova empiricamente que **nenhum atributo isolado consegue determinar se a água é potável de forma linear**. Esse comportamento justifica a nossa abordagem técnica de benchmarking: modelos lineares simples como a *Regressão Logística* tendem a apresentar menor desempenho comparados a modelos de árvore baseados em ensembles não-lineares, como o *Random Forest* e o *XGBoost*, que conseguem capturar padrões complexos e interações profundas entre os dados químicos.
 
 <img width="500" height="451" alt="heatmap_correlacao" src="https://github.com/user-attachments/assets/0ba8fa9b-49e5-426c-93e4-9b83d38c8bf6" />
 
