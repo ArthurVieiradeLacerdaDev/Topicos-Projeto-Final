@@ -50,6 +50,90 @@ Utilizamos o dataset **Water Potability**, hospedado no Kaggle (https://www.kagg
 
 ---
 
+## 📊 Análise Estatística e Exploração de Dados
+
+Antes de treinar os modelos, realizamos uma etapa de Análise Exploratória de Dados (EDA) para compreender as características físico-químicas da água e mapear as dificuldades que os algoritmos de Machine Learning enfrentariam. Os principais insights são detalhados a seguir:
+
+### 1. Desbalanceamento de Classes e Amostragem
+A base de dados apresenta um desbalanceamento nítido entre amostras potáveis e não potáveis:
+*   **Água Não Potável (Classe 0):** 1.998 amostras (61,0%)
+*   **Água Potável (Classe 1):** 1.278 amostras (39,0%)
+
+Esse desbalanceamento de classes prejudicaria o aprendizado de classificadores tradicionais, tornando-os tendenciosos em direção à classe majoritária (não potável). Para mitigar esse problema de forma científica, o pipeline implementado em `main.py` utiliza a técnica **SMOTE** (`Synthetic Minority Over-sampling Technique`) [1, 2], gerando dados sintéticos para equilibrar a proporção das classes antes do treinamento.
+
+<img width="500" height="371" alt="distribuicao_classes" src="https://github.com/user-attachments/assets/6b29979f-f5dc-463d-9a12-9f92ba920e66" />
+
+### 2. Tratamento de Dados Ausentes (Valores Nulos)
+Detectamos que três variáveis cruciais possuem dados faltantes expressivos:
+*   **Sulfate (Sulfato):** 781 valores ausentes (exige atenção, pois o sulfato é abundante no solo e indicador de mineralização) [4].
+*   **ph (pH):** 491 valores ausentes (essencial para medir o equilíbrio ácido-base) [5].
+*   **Trihalomethanes (Trihalometanos):** 162 valores ausentes (subprodutos químicos de tratamento) [4].
+
+Para evitar a perda de quase um terço do dataset por eliminação direta, o script utiliza a classe `SimpleImputer` com a estratégia de preenchimento pela **mediana** de cada coluna [1, 2], preservando a integridade estatística das distribuições.
+
+### 3. Distribuição do pH vs. Padrões de Segurança da OMS
+O pH médio das amostras é de **7,08**, o que parece ideal à primeira vista. No entanto, a análise de dispersão mostra que uma quantidade massiva de amostras está fora da faixa de segurança regulamentada pela Organização Mundial da Saúde (OMS), que estabelece limites estritos entre **6,5 e 8,5** para consumo humano seguro [5]. Amostras muito ácidas (pH < 6.5) ou muito alcalinas (pH > 8.5) representam riscos graves à saúde [5].
+
+<img width="500" height="294" alt="distribuicao_ph" src="https://github.com/user-attachments/assets/e9b79775-40f4-474e-aa1f-1fe71871171b" />
+
+### 4. Correlação Linear Desprezível (Relações Não-Lineares)
+Ao calcular a matriz de correlação de Pearson entre todas as propriedades físico-químicas da água e a variável-alvo (`Potability`), observou-se que todos os coeficientes lineares são extremamente baixos (praticamente todos abaixo de **0.05**).
+
+Isso prova empiricamente que **nenhum atributo isolado consegue determinar se a água é potável de forma linear**. Esse comportamento justifica a nossa abordagem técnica de benchmarking [6]: modelos lineares simples como a *Regressão Logística* [1, 6] tendem a apresentar menor desempenho comparados a modelos de árvore baseados em ensembles não-lineares, como o *Random Forest* e o *XGBoost* [1, 6], que conseguem capturar padrões complexos e interações profundas entre os dados químicos.
+
+<img width="500" height="451" alt="heatmap_correlacao" src="https://github.com/user-attachments/assets/0ba8fa9b-49e5-426c-93e4-9b83d38c8bf6" />
+
+---
+
 ## ⚙️ Instruções de Instalação e Configuração
 
-Os passos a seguir incluem todas as instruções necessárias para instalação, configuração e execução do projeto.
+Siga o passo a passo abaixo para instalar as dependências, executar o pipeline de treinamento e visualizar o monitoramento de experimentos no painel do MLflow [3].
+
+### 1. Pré-requisitos
+Certifique-se de ter o **Python 3.12** ou superior instalado em sua máquina.
+
+### 2. Clonar o Repositório e Configurar o Ambiente
+No seu terminal, execute os comandos abaixo para clonar o projeto e criar um ambiente virtual dedicado:
+
+#### Clone o repositório da equipe:
+git clone https://github.com/ArthurVieiradeLacerdaDev/Topicos-Projeto-Final
+cd Topicos-Projeto-Final
+
+#### Crie um ambiente virtual (venv):
+python -m venv venv
+
+#### Ative o ambiente virtual
+#### No Windows (Prompt de Comando):
+venv\Scripts\activate
+
+#### No Linux/macOS:
+source venv/bin/activate
+
+### 3. Instalar Dependências do Pipeline
+#### Instale as bibliotecas necessárias para manipulação de dados, balanceamento, modelagem preditiva e tracking de experimentos:
+pip install pandas numpy scikit-learn xgboost imbalanced-learn mlflow
+
+### 4. Executar o Treinamento dos Modelos
+O arquivo main.py está configurado para ler o arquivo water_potability.csv, realizar todo o pré-processamento (imputação de nulos, balanceamento com SMOTE e padronização com StandardScaler) e treinar três algoritmos supervisionados diferentes: Regressão Logística, Random Forest e XGBoost.
+
+#### Para iniciar o processo, execute:
+python main.py
+
+### 5. Visualizar Experimentos no MLflow (Interface Gráfica)
+Após a execução do script, todas as métricas geradas (Acurácia, F1-Score, Precisão e Recall), parâmetros dos modelos e os artefatos salvos estarão registrados.
+
+Para abrir o dashboard interativo do MLflow e comparar o desempenho dos modelos, execute o comando abaixo no mesmo diretório:
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+
+Em seguida, abra o seu navegador de internet e acesse o endereço local gerado pelo MLflow: 👉 http://localhost:5000
+Na interface web, você poderá:
+* Visualizar as métricas de cada modelo preditivo sob o experimento Previsao_Potabilidade_Agua.
+* Comparar graficamente as curvas de aprendizado e métricas de desempenho.
+* Baixar ou exportar os binários dos modelos treinados para produção.
+
+---
+
+## 📹 Apresentação e Demonstração do Projeto
+O vídeo de apresentação do projeto, contendo a explicação da metodologia de ciência de dados utilizada pela equipe, os resultados estatísticos e a demonstração ao vivo da execução do pipeline e do painel do MLflow, pode ser assistido no link abaixo:
+
+<link youtube>
