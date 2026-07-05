@@ -97,7 +97,7 @@ No seu terminal, execute os comandos abaixo para clonar o projeto e criar um amb
 
 #### Clone o repositório da equipe:
 git clone https://github.com/ArthurVieiradeLacerdaDev/Topicos-Projeto-Final
-cd Topicos-Projeto-Final
+<br>cd Topicos-Projeto-Final
 
 #### Crie um ambiente virtual (venv):
 python -m venv venv
@@ -123,10 +123,12 @@ python main.py
 Após a execução do script, todas as métricas geradas (Acurácia, F1-Score, Precisão e Recall), parâmetros dos modelos e os artefatos salvos estarão registrados.
 
 Para abrir o dashboard interativo do MLflow e comparar o desempenho dos modelos, execute o comando abaixo no mesmo diretório:
-mlflow ui --backend-store-uri sqlite:///mlflow.db
+<br>mlflow ui --backend-store-uri sqlite:///mlflow.db
 
-Em seguida, abra o seu navegador de internet e acesse o endereço local gerado pelo MLflow: 👉 http://localhost:5000
-Na interface web, você poderá:
+Em seguida, abra o seu navegador de internet e acesse o endereço local gerado pelo MLflow:
+<br>👉 http://localhost:5000
+
+<br>Na interface web, você poderá:
 * Visualizar as métricas de cada modelo preditivo sob o experimento Previsao_Potabilidade_Agua.
 * Comparar graficamente as curvas de aprendizado e métricas de desempenho.
 * Baixar ou exportar os binários dos modelos treinados para produção.
