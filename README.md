@@ -138,4 +138,4 @@ Em seguida, abra o seu navegador de internet e acesse o endereço local gerado p
 ## 📹 Apresentação e Demonstração do Projeto
 O vídeo de apresentação do projeto, contendo a explicação da metodologia de ciência de dados utilizada pela equipe, os resultados estatísticos e a demonstração ao vivo da execução do pipeline e do painel do MLflow, pode ser assistido no link abaixo:
 
-<link youtube>
+<link youtube> https://www.youtube.com/watch?v=XrUt7laGOxA
